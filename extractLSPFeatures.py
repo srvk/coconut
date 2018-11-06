@@ -60,18 +60,18 @@ def getFeatures (inFile, outpath, column_indices, config, smile, scratch, save):
                         tmp = os.path.join (scratch, vid+'.raw')
                         res = coconut.opensmile.extractFeatures (inFile, tmp, config)
                         if res[0] or not os.path.getsize (tmp):
-                                print 'getFeatures: something is fishy0 in', vid, '>>>', res[2]
+                                print('getFeatures: something is fishy0 in', vid, '>>>', res[2])
                                 return
                 else:
                         wav = os.path.join (scratch, vid+'.wav')
                         res = coconut.opensmile.extractWav (inFile, wav)
                         if res[0] or not os.path.getsize (wav):
-                                print 'getFeatures: something is fishy1 in', vid, '>>>', res[2]
+                                print('getFeatures: something is fishy1 in', vid, '>>>', res[2])
                                 return
                         tmp = os.path.join (scratch, vid+'.raw')
                         res = coconut.opensmile.extractFeatures (wav, tmp, config)
                         if res[0] or not os.path.getsize (tmp):
-                                print 'getFeatures: something is fishy2 in', vid, '>>>', res[2]
+                                print('getFeatures: something is fishy2 in', vid, '>>>', res[2])
                                 return
                         os.remove (wav)
 
@@ -87,7 +87,7 @@ def getFeatures (inFile, outpath, column_indices, config, smile, scratch, save):
 
                 # some checks
                 if filteredFeatures.ndim == 1:
-                       print 'getFeatures: something is fishy3 in', vid
+                       print('getFeatures: something is fishy3 in', vid)
                        return
 
                 # statistics
@@ -97,9 +97,9 @@ def getFeatures (inFile, outpath, column_indices, config, smile, scratch, save):
                 sum   = numpy.sum   (filteredFeatures,    axis=0)
                 smosq = numpy.sum   (filteredFeatures**2, axis=0)
 
-                print '  Thread=', os.getpid(), 'Key=', vid, 'Frames=', len
+                print('  Thread=', os.getpid(), 'Key=', vid, 'Frames=', len)
                 if not len or numpy.allclose (min, max):
-                        print 'getFeatures: something is fishy4 in', vid
+                        print('getFeatures: something is fishy4 in', vid)
                         return 
 
         except Exception as e:
@@ -109,7 +109,7 @@ def getFeatures (inFile, outpath, column_indices, config, smile, scratch, save):
                 raise e
                 
         else:
-                return vid, filteredFeatures, long(len), min, max, sum, smosq
+                return vid, filteredFeatures, int(len), min, max, sum, smosq
 
 
 def extractNoisemesPar (wavFile, outpath, column_indices, config, smile, scratch, save):
@@ -143,14 +143,14 @@ def extractLSPFPar (wavFile, outpath, column_indices, meanvar, eigVec, eigVal, n
 
 def main(args):
         wavRoot = os.path.abspath(args.input)
-	print "Loading files from "+wavRoot
+	print("Loading files from "+wavRoot)
 	wavFileSet = coconut.utils.get_filelist(wavRoot,"wav")
 	config = os.path.abspath(args.config)
 	outFilePath = os.path.abspath(args.outpath)
 	SMILE = os.path.abspath(args.smilepath)
 	featIndex = os.path.abspath(args.featIndex)
 
-        print "Loading configuration from "+featIndex
+        print("Loading configuration from "+featIndex)
         if len(open(featIndex).readline().split(' ')) == 2:
                 # alternatively - seems to be in format used by Lara (and Yipei?)
                 column_indices = sorted([int(line.strip().split(' ')[1])-1 for line in open(featIndex)])
@@ -159,17 +159,17 @@ def main(args):
                 column_indices = [int(colid)-1 for colid in open(featIndex).readline().rstrip("\n").split(",")]
 
         if args.meanvar:
-                print "Loading the mean var Index "+args.meanvar
+                print("Loading the mean var Index "+args.meanvar)
                 meanvar = numpy.loadtxt(os.path.abspath(args.meanvar))
 	
                 #if args.eigVal and args.eigVec:
-                print "Loading the principal components "+args.eigVal,args.eigVec
+                print("Loading the principal components "+args.eigVal,args.eigVec)
                 eigVal = numpy.loadtxt(os.path.abspath(args.eigVal))
                 eigVec = numpy.loadtxt(os.path.abspath(args.eigVec),delimiter=',')
         
                 #if args.comps:
                 n_comps = args.comps
-                print "Components Extracted: "+str(n_comps)
+                print("Components Extracted: "+str(n_comps))
 
         if args.save:
                 tmpPath = args.tmp
@@ -182,7 +182,7 @@ def main(args):
                 os.makedirs(tmpPath)
 
         # now do 'map' in parallel
-        print 'TmpPath=', tmpPath, 'Save=', args.save
+        print('TmpPath=', tmpPath, 'Save=', args.save)
         if args.meanvar:
                 mapresult = coconut.utils.dispatchParMap (extractLSPFPar, wavFileSet,
                                                           outFilePath, column_indices, 
@@ -195,9 +195,9 @@ def main(args):
                 
         # the 'reduce' step
         L1 = len (mapresult)
-        mapresult = filter (lambda x: x!=None, mapresult)
+        mapresult = [x for x in mapresult if x!=None]
         L2 = len (mapresult)
-        print 'Done with parmap,', L2, 'of', L1, 'keys processed'        
+        print('Done with parmap,', L2, 'of', L1, 'keys processed')        
 
         tlen, tsum, tsmosq, tmin, tmax = mapresult[0]
         for (rlen, rsum, rsmosq, rmin, rmax) in mapresult[1:]:
@@ -210,8 +210,8 @@ def main(args):
         msos = tsmosq/tlen
 
         # info
-        print "Elements=", len(mapresult)
-        print "Length=", tlen
+        print("Elements=", len(mapresult))
+        print("Length=", tlen)
         #print "Minimum=", tmin
         #print "Mean=", mean
         #print "Maximum=", tmax

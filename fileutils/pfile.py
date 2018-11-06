@@ -45,7 +45,7 @@ def readPfile(filename):
         features = []
         labels = []
         sen = 0
-        for i in xrange(nFrames):
+        for i in range(nFrames):
             if i == index[sen]:
                 features.append([])
                 labels.append([])
@@ -91,8 +91,8 @@ def writePfile(filename, features, labels = None):
 
         # Write data
         f.seek(headerSize)
-        for i in xrange(nSentences):
-            for j in xrange(len(features[i])):
+        for i in range(nSentences):
+            for j in range(len(features[i])):
                 f.write(struct.pack(">2i", i, j))
                 f.write(struct.pack(">%df" % nFeatures, *numpy.array(features[i][j]).ravel()))
                 if labels is not None:

@@ -51,14 +51,6 @@ Usage:
 # at  http://stackoverflow.com/a/5443941/446149
 
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-
-try:
-    from itertools import izip
-except ImportError:  # Python 3 built-in zip already returns iterable
-    izip = zip
 
 from itertools import repeat
 
@@ -121,7 +113,7 @@ def map(function, iterable, *args, **kwargs):
     # Map:
     if parallel:
         output = pool.map(_func_star_single,
-                          izip(repeat(function), iterable,
+                          zip(repeat(function), iterable,
                                repeat(list(args))),
                           chunksize)
         if close_pool:
@@ -164,7 +156,7 @@ def starmap(function, iterables, *args, **kwargs):
     # Map:
     if parallel:
         output = pool.map(_func_star_many,
-                          izip(repeat(function),
+                          zip(repeat(function),
                                iterables, repeat(list(args))),
                           chunksize)
         if close_pool:
@@ -183,9 +175,9 @@ if __name__ == "__main__":
         return aaa
     print("Example1: Begins")
     ITEMS = [1, 2, 3, 4]
-    OUT = map(_func, ITEMS, 5, 6, 7, 8, parallel=False)
+    OUT = list(map(_func, ITEMS, 5, 6, 7, 8, parallel=False))
     print("Using parallel:")
-    OUT_P = map(_func, ITEMS, 5, 6, 7, 8, parallel=True)
+    OUT_P = list(map(_func, ITEMS, 5, 6, 7, 8, parallel=True))
     if OUT != OUT_P:
         print("Example1: Failed")
     else:

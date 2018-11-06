@@ -295,7 +295,7 @@ class PointTier(object):
         source.readline()
         self.minTime = float(source.readline().split()[2])
         self.maxTime = float(source.readline().split()[2])
-        for i in xrange(int(source.readline().rstrip().split()[3])):
+        for i in range(int(source.readline().rstrip().split()[3])):
             source.readline().rstrip() # header
             itim = float(source.readline().rstrip().split()[2])
             imrk = source.readline().rstrip().split()[2].replace('"', '') 
@@ -308,16 +308,16 @@ class PointTier(object):
         path for writing
         """
         sink = f if hasattr(f, 'write') else codecs.open(f, 'w', 'UTF-8')
-        print >> sink, 'File type = "ooTextFile"'
-        print >> sink, 'Object class = "TextTier"'
-        print >> sink
-        print >> sink, 'xmin = {0}'.format(min(self))
-        print >> sink, 'xmax = {0}'.format(max(self))
-        print >> sink, 'points: size = {0}'.format(len(self))
+        print('File type = "ooTextFile"', file=sink)
+        print('Object class = "TextTier"', file=sink)
+        print(file=sink)
+        print('xmin = {0}'.format(min(self)), file=sink)
+        print('xmax = {0}'.format(max(self)), file=sink)
+        print('points: size = {0}'.format(len(self)), file=sink)
         for (i, point) in enumerate(self.points, 1):
-            print >> sink, 'points [{0}]:'.format(i)
-            print >> sink, '\ttime = {0}'.format(point.time)
-            print >> sink, u'\tmark = {0}'.format(point.mark)
+            print('points [{0}]:'.format(i), file=sink)
+            print('\ttime = {0}'.format(point.time), file=sink)
+            print('\tmark = {0}'.format(point.mark), file=sink)
         sink.close()
 
     def bounds(self):
@@ -452,7 +452,7 @@ class IntervalTier(object):
         source.readline()
         self.minTime = float(source.readline().split()[2])
         self.maxTime = float(source.readline().split()[2])
-        for i in xrange(int(source.readline().rstrip().split()[3])):
+        for i in range(int(source.readline().rstrip().split()[3])):
             source.readline().rstrip() # header
             imin = float(source.readline().rstrip().split()[2])
             imax = float(source.readline().rstrip().split()[2])
@@ -483,20 +483,20 @@ class IntervalTier(object):
         writing
         """
         sink = f if hasattr(f, 'write') else open(f, 'w')
-        print >> sink, 'File type = "ooTextFile"'
-        print >> sink, 'Object class = "IntervalTier"\n'
-        print >> sink, 'xmin = {0}'.format(self.minTime)
-        print >> sink, 'xmax = {0}'.format(self.maxTime if self.maxTime \
-                                          else self.intervals[-1].maxTime)
+        print('File type = "ooTextFile"', file=sink)
+        print('Object class = "IntervalTier"\n', file=sink)
+        print('xmin = {0}'.format(self.minTime), file=sink)
+        print('xmax = {0}'.format(self.maxTime if self.maxTime \
+                                          else self.intervals[-1].maxTime), file=sink)
         # compute the number of intervals and make the empty ones
         output = self._fillInTheGaps(null)
         # write it all out
-        print >> sink, 'intervals: size = {0}'.format(len(output))
+        print('intervals: size = {0}'.format(len(output)), file=sink)
         for (i, interval) in enumerate(output, 1):
-            print >> sink, 'intervals [{0}]'.format(i)
-            print >> sink, '\txmin = {0}'.format(interval.minTime)
-            print >> sink, '\txmax = {0}'.format(interval.maxTime)
-            print >> sink, '\ttext = "{0}"'.format(interval.mark)
+            print('intervals [{0}]'.format(i), file=sink)
+            print('\txmin = {0}'.format(interval.minTime), file=sink)
+            print('\txmax = {0}'.format(interval.maxTime), file=sink)
+            print('\ttext = "{0}"'.format(interval.mark), file=sink)
         sink.close()
 
     def bounds(self):
@@ -652,14 +652,14 @@ class TextGrid(object):
         source.readline() # more header junk
         m = int(source.readline().rstrip().split()[2]) # will be self.n
         source.readline()
-        for i in xrange(m): # loop over grids
+        for i in range(m): # loop over grids
             source.readline()
             if source.readline().rstrip().split()[2] == '"IntervalTier"': 
                 inam = source.readline().rstrip().split(' = ')[1].strip('"')
                 imin = round(float(source.readline().rstrip().split()[2]), 5)
                 imax = round(float(source.readline().rstrip().split()[2]), 5)
                 itie = IntervalTier(inam)
-                for j in xrange(int(source.readline().rstrip().split()[3])):
+                for j in range(int(source.readline().rstrip().split()[3])):
                     source.readline().rstrip().split() # header junk
                     jmin = round(float(source.readline().rstrip().split()[2]), 5)
                     jmax = round(float(source.readline().rstrip().split()[2]), 5)
@@ -673,7 +673,7 @@ class TextGrid(object):
                 imax = round(float(source.readline().rstrip().split()[2]), 5)
                 itie = PointTier(inam)
                 n = int(source.readline().rstrip().split()[3])
-                for j in xrange(n):
+                for j in range(n):
                     source.readline().rstrip() # header junk
                     jtim = round(float(source.readline().rstrip().split()[2]),
                                                                            5)
@@ -689,48 +689,48 @@ class TextGrid(object):
         for writing.
         """
         sink = f if hasattr(f, 'write') else codecs.open(f, 'w', 'UTF-8')
-        print >> sink, 'File type = "ooTextFile"'
-        print >> sink, 'Object class = "TextGrid"\n'
-        print >> sink, 'xmin = {0}'.format(self.minTime)
+        print('File type = "ooTextFile"', file=sink)
+        print('Object class = "TextGrid"\n', file=sink)
+        print('xmin = {0}'.format(self.minTime), file=sink)
         # compute max time
         maxT = self.maxTime
         if not maxT:
             maxT = max([t.maxTime if t.maxTime else t[-1].maxTime \
                                                for t in self.tiers])
-        print >> sink, 'xmax = {0}'.format(maxT)
-        print >> sink, 'tiers? <exists>'
-        print >> sink, 'size = {0}'.format(len(self))
-        print >> sink, 'item []:'
+        print('xmax = {0}'.format(maxT), file=sink)
+        print('tiers? <exists>', file=sink)
+        print('size = {0}'.format(len(self)), file=sink)
+        print('item []:', file=sink)
         for (i, tier) in enumerate(self.tiers, 1):
-            print >> sink, '\titem [{0}]:'.format(i)
+            print('\titem [{0}]:'.format(i), file=sink)
             if tier.__class__ == IntervalTier: 
-                print >> sink, '\t\tclass = "IntervalTier"'
-                print >> sink, '\t\tname = "{0}"'.format(tier.name)
-                print >> sink, '\t\txmin = {0}'.format(tier.minTime)
-                print >> sink, '\t\txmax = {0}'.format(maxT)
+                print('\t\tclass = "IntervalTier"', file=sink)
+                print('\t\tname = "{0}"'.format(tier.name), file=sink)
+                print('\t\txmin = {0}'.format(tier.minTime), file=sink)
+                print('\t\txmax = {0}'.format(maxT), file=sink)
                 # compute the number of intervals and make the empty ones
                 output = tier._fillInTheGaps(null)
-                print >> sink, '\t\tintervals: size = {0}'.format(
-                                                           len(output))
+                print('\t\tintervals: size = {0}'.format(
+                                                           len(output)), file=sink)
                 for (j, interval) in enumerate(output, 1):
-                    print >> sink, '\t\t\tintervals [{0}]:'.format(j)
-                    print >> sink, '\t\t\t\txmin = {0}'.format(
-                                                        interval.minTime)
-                    print >> sink, '\t\t\t\txmax = {0}'.format(
-                                                        interval.maxTime)
-                    print >> sink, u'\t\t\t\ttext = "{0}"'.format(
-                                                        interval.mark)
+                    print('\t\t\tintervals [{0}]:'.format(j), file=sink)
+                    print('\t\t\t\txmin = {0}'.format(
+                                                        interval.minTime), file=sink)
+                    print('\t\t\t\txmax = {0}'.format(
+                                                        interval.maxTime), file=sink)
+                    print('\t\t\t\ttext = "{0}"'.format(
+                                                        interval.mark), file=sink)
             elif tier.__class__ == PointTier: # PointTier
-                print >> sink, '\t\tclass = "TextTier"'
-                print >> sink, '\t\tname = "{0}"'.format(tier.name)
-                print >> sink, '\t\txmin = {0}'.format(min(tier))
-                print >> sink, '\t\txmax = {0}'.format(max(tier))
-                print >> sink, '\t\tpoints: size = {0}'.format(len(tier))
+                print('\t\tclass = "TextTier"', file=sink)
+                print('\t\tname = "{0}"'.format(tier.name), file=sink)
+                print('\t\txmin = {0}'.format(min(tier)), file=sink)
+                print('\t\txmax = {0}'.format(max(tier)), file=sink)
+                print('\t\tpoints: size = {0}'.format(len(tier)), file=sink)
                 for (k, point) in enumerate(tier, 1):
-                    print >> sink, '\t\t\tpoints [{0}]:'.format(k)
-                    print >> sink, '\t\t\t\ttime = {0}'.format(point.time)
-                    print >> sink, u'\t\t\t\tmark = "{0}"'.format(
-                                                           point.mark)
+                    print('\t\t\tpoints [{0}]:'.format(k), file=sink)
+                    print('\t\t\t\ttime = {0}'.format(point.time), file=sink)
+                    print('\t\t\t\tmark = "{0}"'.format(
+                                                           point.mark), file=sink)
         sink.close()
 
     # alternative constructor

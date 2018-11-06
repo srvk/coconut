@@ -35,7 +35,7 @@ def load_param(filename):
         maxDict = {}
         minDict = {}
 
-        print 'Loading scaling parameters', filename
+        print('Loading scaling parameters', filename)
         for line in open(filename):     
                 (index, maxVal, minVal) = line.strip().split()
                 minDict[int(index)] = float(minVal)
@@ -113,7 +113,7 @@ def OutputPredict(outputPath, filename, hyp_label, hyp_conf):
 		out = os.path.join(outputPath,filename)
 	f=gzip.open(out, 'w')
 	InsNum = len(hyp_label[0])
-	print "predicting", InsNum, "into", out
+	print("predicting", InsNum, "into", out)
 	for n in range(0, InsNum):
 		predictline = ""
 		for m in range(0, len(hyp_label)):
@@ -162,7 +162,7 @@ def CalculateBof(featurelist, kind):
                                         bof[i] += vector[i]
                                         bofsquare[i] += pow(vector[i], 2)
                         else:
-                                print "kind error:", kind
+                                print("kind error:", kind)
 
         if kind=="ave":
                 for i in range(0, len(bof)):
@@ -194,7 +194,7 @@ def iterateFiles (file, outputPath, modelbox, keepPredict, kind, seg):
                 baseName    = os.path.basename(file)
                 (clip, lab) = baseName.split(os.extsep, 1) #separate by first period
                 if (not os.path.isfile(file) or not os.path.getsize(file)):
-                        print 'Could not find file:', file
+                        print('Could not find file:', file)
                         return
                 test_x, timelist = SelectSample(file)
                 hyp_label, hyp_conf = Predict(test_x, modelbox)
@@ -204,7 +204,7 @@ def iterateFiles (file, outputPath, modelbox, keepPredict, kind, seg):
 	        timeLen = len(ftrpool)
 #		print clip
 	        if timeLen<seg:
-	                print "Clip length is less than the segment number. Skipping: "+clip
+	                print("Clip length is less than the segment number. Skipping: "+clip)
 	        else:
 	                step = int(float(timeLen)/seg)
 	                bof = []
@@ -212,13 +212,13 @@ def iterateFiles (file, outputPath, modelbox, keepPredict, kind, seg):
 	                        bof += CalculateBof(ftrpool[i*step:(i+1)*step], kind)
 	                outputfile = path.join(outputPath, clip+'.bof')
 	                outputBof(bof, outputfile)
-	                print "BOF complete:", clip
+	                print("BOF complete:", clip)
 	        if keepPredict in "/scratch":
-	                print "Removing predict:",clip
+	                print("Removing predict:",clip)
 	                os.remove(path.join("/scratch", clip+".txt.gz"))
-        except Exception, e:
+        except Exception as e:
                 # Something went wrong
-                print 'Caught exception in worker thread:'
+                print('Caught exception in worker thread:')
                 traceback.print_exc()
                 raise e
         else:
@@ -246,20 +246,20 @@ def main(args):
                 model = joblib.load(modelfile)
                 modelbox.append(model)
                 #not sure whether the model type can be add to the list
-        print "Loaded model", modellist
+        print("Loaded model", modellist)
 
         if 'scale' in locals() and len(scale):
                 (maxDict, minDict) = load_param(scale)
 
         # now do 'map' in parallel
-        print 'Executing predict parmap:', len (testlist)
+        print('Executing predict parmap:', len (testlist))
         if os.environ.get('PBS_NUM_PPN') is None:
                 mapresult = [iterateFiles (file, outputPath, modelbox, keepPredict, kind, seg) for file in testlist]
         else:
                 np = int(os.environ.get('PBS_NUM_PPN'))
-                print '  np=', np
+                print('  np=', np)
                 mapresult = parmap.map (iterateFiles, testlist, outputPath, modelbox, keepPredict, kind, seg, processes=np)
-        print 'Done!'
+        print('Done!')
 
 
 if __name__ == '__main__':

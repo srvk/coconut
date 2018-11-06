@@ -14,7 +14,7 @@ def readHtk(filename):
 
         # Read data
         data = struct.unpack(">%df" % (nSamples * sampSize / 4), f.read(nSamples * sampSize))
-        return numpy.array(data).reshape(nSamples, sampSize / 4)
+        return numpy.array(data).reshape(nSamples, sampSize // 4)
 
 def writeHtk(filename, feature, sampPeriod, parmKind):
     """

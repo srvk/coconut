@@ -1,6 +1,7 @@
 import numpy
 import struct
 from fileutils import smart_open
+from functools import reduce
 
 def readString(f):
     s = ""

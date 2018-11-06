@@ -146,7 +146,7 @@ ok = janus.Tcl_Init (interp)
 ok = janus.DllItf_Init (interp)
 tcl = POINTER(Tcl_Interp)
 itf = tcl.in_dll(janus, "itf")
-print itf, interp
+print(itf, interp)
 
 ok = janus.Janus_Init (interp)
 # It is ok that this returns '1'

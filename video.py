@@ -1,6 +1,6 @@
 #!/opt/python27/bin/python
 
-from janus import *
+from .janus import *
 
 # -----------------------------
 
@@ -26,26 +26,26 @@ if False:
     
     A=DMatrix(5,4)
     A.array[1][3]=3
-    print A.array
-    print A.array[1][3]
+    print(A.array)
+    print(A.array[1][3])
     
     b=numpy.array(([0,1,2,3],[6,7,8,9],[6,7,9,0],[0,1,2,4],[6,7,9,0]), numpy.float64)
     B=DMatrix(b)
-    print B.array
-    print B.array[1][3]
+    print(B.array)
+    print(B.array[1][3])
     
     c=janus.dmatrixCreate (5, 4)
     C=DMatrix(c)
     C.array[1][3]=4
-    print C.array
-    print C.array[1][3]
-    print C.array.shape
+    print(C.array)
+    print(C.array[1][3])
+    print(C.array.shape)
     
     d=janus.fmatrixCreate(4,11)
     D=FMatrix(d)
     D.array[1][3]=4
-    print D.array
-    print D.array[1][3]
+    print(D.array)
+    print(D.array[1][3])
 
 from scipy.io import wavfile
 #fs, sig = wavfile.read('/people/fmetze1/RT_Alaska/adc/siptrans.wav')
@@ -106,13 +106,13 @@ S[numpy.isnan(S)] = 1
 
 def smooth (x,window_len=11,window='hanning'):
     if x.ndim != 1:
-        raise ValueError, "smooth only accepts 1 dimension arrays."
+        raise ValueError("smooth only accepts 1 dimension arrays.")
     if x.size < window_len:
-        raise ValueError, "Input vector needs to be bigger than window size."
+        raise ValueError("Input vector needs to be bigger than window size.")
     if window_len<3:
         return x
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
     s=numpy.r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]
     if window == 'flat': #moving average
@@ -134,7 +134,7 @@ if len(ups) < len(downs):
 for s in zip(ups,downs):
     if s[1]-s[0] < 100:
         continue
-    print .01*s[0],.01*s[1],.01*s[0]
+    print(.01*s[0],.01*s[1],.01*s[0])
     
     janus.Tcl_Eval(interp, "fs cut tmp adcE %fs %fs" % (.01*s[0],.01*s[1]))
     janus.Tcl_Eval(interp, "fs writeADC tmp tmp-%.2f.wav -hm WAV" % (.01*s[0]))

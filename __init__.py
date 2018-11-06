@@ -10,7 +10,7 @@ import __main__ as main
 
 # welcome/ goodbye message
 if hasattr(main, '__file__'):
-    print '[[[ Starting', __name__, 'on', socket.gethostname().partition('.')[0], os.getpid(), 'at', datetime.datetime.now().replace(microsecond=0).isoformat(' '), ']]]'
+    print('[[[ Starting', __name__, 'on', socket.gethostname().partition('.')[0], os.getpid(), 'at', datetime.datetime.now().replace(microsecond=0).isoformat(' '), ']]]')
 
     def atexit_coconut (dt):
         u = resource.getrusage(resource.RUSAGE_SELF).ru_utime + \
@@ -22,7 +22,7 @@ if hasattr(main, '__file__'):
             T = t-datetime.timedelta(microseconds=t.microseconds)
         else:
             T = t+datetime.timedelta(microseconds=1000000-t.microseconds)
-        print '[[[ Elapsed time is', T, 'with user= {:.1f}%'.format(u/t.total_seconds()*100), 'and system= {:.1f}%'.format(s/t.total_seconds()*100), ']]]'
+        print('[[[ Elapsed time is', T, 'with user= {:.1f}%'.format(u/t.total_seconds()*100), 'and system= {:.1f}%'.format(s/t.total_seconds()*100), ']]]')
 
     atexit.register (atexit_coconut, dt=datetime.datetime.now())
 
